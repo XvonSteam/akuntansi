@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Folder Contents</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Clickable PHP Files</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,63 +11,62 @@
             padding: 20px;
             background-color: #f4f4f4;
         }
-        .file-list {
-            list-style-type: none;
-            padding: 0;
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
-        .file-item {
+        th, td {
             padding: 10px;
             border: 1px solid #ddd;
-            margin-bottom: 5px;
-            background: #fff;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
+            text-align: left;
         }
-        .icon {
-            margin-right: 10px;
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        a {
+            text-decoration: none;
             color: #007bff;
+        }
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
-<h1><i class="fas fa-folder-open icon"></i> Isi Folder</h1>
+<h1>Daftar File PHP</h1>
 
-<ul class="file-list">
-    <?php
-    // Tentukan folder yang ingin dibaca
-    $directory = './'; // Ganti dengan path folder yang diinginkan
+<table>
+    <thead>
+        <tr>
+            <th>Nama File</th>
+            <th>Ukuran (KB)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        $directory = './'; // Ganti dengan path folder yang diinginkan
 
-    // Memeriksa apakah folder ada
-    if (is_dir($directory)) {
-        // Membuka folder
-        if ($handle = opendir($directory)) {
-            // Membaca isi folder
-            while (false !== ($entry = readdir($handle))) {
-                // Mengabaikan '.' dan '..'
-                if ($entry != "." && $entry != "..") {
-                    // Menentukan ikon berdasarkan jenis file
-                    $icon = 'fas fa-file'; // Default icon
-                    if (is_dir($directory . $entry)) {
-                        $icon = 'fas fa-folder'; // Ikon untuk folder
-                    } elseif (pathinfo($entry, PATHINFO_EXTENSION) == 'txt') {
-                        $icon = 'fas fa-file-alt'; // Ikon untuk file teks
-                    } elseif (pathinfo($entry, PATHINFO_EXTENSION) == 'jpg' || pathinfo($entry, PATHINFO_EXTENSION) == 'png') {
-                        $icon = 'fas fa-image'; // Ikon untuk gambar
+        if (is_dir($directory)) {
+            if ($handle = opendir($directory)) {
+                while (false !== ($entry = readdir($handle))) {
+                    if ($entry != "." && $entry != ".." && pathinfo($entry, PATHINFO_EXTENSION) == 'php') {
+                        $fileSize = filesize($directory . $entry) / 1024; // Ukuran dalam KB
+                        echo "<tr>
+                                <td><a href='$entry'>$entry</a></td>
+                                <td>" . round($fileSize, 2) . " KB</td>
+                              </tr>";
                     }
-
-                    // Menampilkan item file/folder
-                    echo "<li class='file-item'><i class='$icon'></i> $entry</li>";
                 }
+                closedir($handle);
             }
-            closedir($handle);
+        } else {
+            echo "<tr><td colspan='2'>Folder tidak ditemukan.</td></tr>";
         }
-    } else {
-        echo "<p><i class='fas fa-exclamation-triangle icon'></i> Folder tidak ditemukan.</p>";
-    }
-    ?>
-</ul>
+        ?>
+    </tbody>
+</table>
 
 </body>
 </html>
